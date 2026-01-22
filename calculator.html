@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四則演算計算機</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .calculator {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 320px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        .display {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: right;
+            font-size: 2rem;
+            font-weight: 500;
+            color: #333;
+            min-height: 60px;
+            word-break: break-all;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: right;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+
+        .operators {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .operator-btn {
+            padding: 14px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            background-color: #fff;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #555;
+        }
+
+        .operator-btn:hover {
+            background-color: #f8f9fa;
+            border-color: #4a90d9;
+        }
+
+        .operator-btn.selected {
+            background-color: #4a90d9;
+            border-color: #4a90d9;
+            color: #fff;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-calculate {
+            background-color: #4a90d9;
+            color: #fff;
+        }
+
+        .btn-calculate:hover {
+            background-color: #3a7bc8;
+        }
+
+        .btn-clear {
+            background-color: #e9ecef;
+            color: #666;
+        }
+
+        .btn-clear:hover {
+            background-color: #dee2e6;
+        }
+
+        .display.error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>四則演算計算機</h1>
+        
+        <div class="display" id="display">0</div>
+        
+        <div class="input-group">
+            <label>数値1</label>
+            <input type="number" id="num1" placeholder="数値を入力">
+        </div>
+        
+        <div class="operators">
+            <button class="operator-btn" data-op="+" onclick="selectOperator('+')">+</button>
+            <button class="operator-btn" data-op="-" onclick="selectOperator('-')">−</button>
+            <button class="operator-btn" data-op="*" onclick="selectOperator('*')">×</button>
+            <button class="operator-btn" data-op="/" onclick="selectOperator('/')">÷</button>
+        </div>
+        
+        <div class="input-group">
+            <label>数値2</label>
+            <input type="number" id="num2" placeholder="数値を入力">
+        </div>
+        
+        <div class="buttons">
+            <button class="btn btn-clear" onclick="clearAll()">クリア</button>
+            <button class="btn btn-calculate" onclick="calculate()">＝</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedOperator = null;
+
+        // 演算子を選択
+        function selectOperator(op) {
+            selectedOperator = op;
+            
+            // ボタンの選択状態を更新
+            document.querySelectorAll('.operator-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.dataset.op === op) {
+                    btn.classList.add('selected');
+                }
+            });
+        }
+
+        // 計算を実行
+        function calculate() {
+            const display = document.getElementById('display');
+            const num1 = document.getElementById('num1').value;
+            const num2 = document.getElementById('num2').value;
+            
+            // 入力チェック
+            if (num1 === '' || num2 === '') {
+                display.textContent = 'エラー';
+                display.classList.add('error');
+                return;
+            }
+            
+            if (selectedOperator === null) {
+                display.textContent = 'エラー';
+                display.classList.add('error');
+                return;
+            }
+            
+            const a = parseInt(num1, 10);
+            const b = parseInt(num2, 10);
+            let result;
+            
+            switch (selectedOperator) {
+                case '+':
+                    result = a + b;
+                    break;
+                case '-':
+                    result = a - b;
+                    break;
+                case '*':
+                    result = a * b;
+                    break;
+                case '/':
+                    if (b === 0) {
+                        display.textContent = 'エラー';
+                        display.classList.add('error');
+                        return;
+                    }
+                    result = Math.floor(a / b);
+                    break;
+            }
+            
+            display.textContent = result;
+            display.classList.remove('error');
+        }
+
+        // クリア
+        function clearAll() {
+            document.getElementById('num1').value = '';
+            document.getElementById('num2').value = '';
+            document.getElementById('display').textContent = '0';
+            document.getElementById('display').classList.remove('error');
+            selectedOperator = null;
+            
+            document.querySelectorAll('.operator-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+        }
+    </script>
+</body>
+</html>
