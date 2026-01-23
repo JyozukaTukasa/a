@@ -18,7 +18,20 @@
 ```
 → **URLがない場合は開発を開始しない**（先にリポジトリを作成してもらう）
 
-### 2. 曖昧な指示は質問する
+### 2. ターミナルの種類を確認
+```
+「使用しているターミナルは何ですか？（PowerShell / cmd / bash / zsh）」
+「OSは何ですか？（Windows / Mac / Linux）」
+```
+→ **ターミナルに応じたコマンドを使用する**（PowerShellとbashでコマンドが異なる）
+
+| ターミナル | OS | 注意点 |
+|-----------|-----|--------|
+| PowerShell | Windows | `&&` 使用不可、`;` で区切る |
+| cmd | Windows | `&&` 使用可 |
+| bash/zsh | Mac/Linux | `&&` 使用可 |
+
+### 3. 曖昧な指示は質問する
 → 目的・入力・出力・エラー処理が不明確なら、必ず質問してから実装
 
 ---
@@ -237,12 +250,13 @@ git checkout ai-generated 2>/dev/null || git checkout -b ai-generated
 ### ⚠️ AIが作業した後（必須・自動実行）
 **ソースコード・ドキュメントの追加/修正/変更があったら、AIは必ず以下を実行すること：**
 
-```bash
+#### PowerShell（Windows）の場合
+```powershell
 # 1. 変更をステージング
 git add .
 
 # 2. コミット（文字化け対策：ファイル経由でUTF-8メッセージ）
-echo "feat(ai): ○○機能を生成" | Out-File -Encoding utf8 .commitmsg
+"feat(ai): 機能を生成" | Out-File -Encoding utf8 .commitmsg
 git commit -F .commitmsg
 Remove-Item .commitmsg
 
@@ -250,7 +264,20 @@ Remove-Item .commitmsg
 git push origin ai-generated
 ```
 
+#### bash/zsh（Mac/Linux）の場合
+```bash
+# 1. 変更をステージング
+git add .
+
+# 2. コミット
+git commit -m "feat(ai): 機能を生成"
+
+# 3. ai-generatedブランチにプッシュ（必須）
+git push origin ai-generated
+```
+
 → **変更があったら必ずプッシュする（スキップ禁止）**
+→ **ターミナルの種類に応じたコマンドを使用する**
 
 ### ⚠️ 人がプッシュを依頼した場合
 **「プッシュして」「mainにあげて」等の依頼があった場合のみ、main/masterにプッシュ**
@@ -271,18 +298,35 @@ git push origin master
 ```
 
 ### ⚠️ 文字化け対策（必須）
-**日本語コミットメッセージは必ずファイル経由で渡す**
 
+**Gitにプッシュする前に必ず確認すること：**
+1. ターミナルの種類（PowerShell / bash / zsh）
+2. 日本語を含むコミットメッセージの場合は文字コード対策
+
+#### PowerShell（Windows）の場合
 ```powershell
-# PowerShellでの正しいコミット方法
-echo "コミットメッセージ" | Out-File -Encoding utf8 .commitmsg
+# 日本語メッセージはファイル経由で渡す（文字化け防止）
+"コミットメッセージ" | Out-File -Encoding utf8 .commitmsg
 git commit -F .commitmsg
 Remove-Item .commitmsg
 ```
+→ `-m` オプションで直接日本語を渡すと文字化けする
 
-→ `-m` オプションで直接日本語を渡すと文字化けする可能性あり
+#### bash/zsh（Mac/Linux）の場合
+```bash
+# 直接 -m オプションで日本語OK
+git commit -m "コミットメッセージ"
+```
 
-→ **コード生成後、この手順を必ず実行する**
+#### コマンドの違い早見表
+| 操作 | PowerShell | bash/zsh |
+|------|------------|----------|
+| コマンド連結 | `;` | `&&` |
+| 日本語コミット | ファイル経由 | `-m` でOK |
+| ファイル削除 | `Remove-Item` | `rm` |
+| 出力リダイレクト | `Out-File -Encoding utf8` | `>` |
+
+→ **コード生成後、ターミナルに応じたコマンドで実行する**
 
 ### コミットメッセージ
 ```
