@@ -255,8 +255,8 @@ git checkout ai-generated 2>/dev/null || git checkout -b ai-generated
 # 1. 変更をステージング
 git add .
 
-# 2. コミット（文字化け対策：ファイル経由でUTF-8メッセージ）
-"feat(ai): 機能を生成" | Out-File -Encoding utf8 .commitmsg
+# 2. コミット（文字化け対策：BOMなしUTF-8でファイル作成）
+[System.IO.File]::WriteAllText(".commitmsg", "feat(ai): 機能を生成", [System.Text.Encoding]::UTF8)
 git commit -F .commitmsg
 Remove-Item .commitmsg
 
@@ -305,11 +305,12 @@ git push origin master
 
 #### PowerShell（Windows）の場合
 ```powershell
-# 日本語メッセージはファイル経由で渡す（文字化け防止）
-"コミットメッセージ" | Out-File -Encoding utf8 .commitmsg
+# 日本語メッセージはBOMなしUTF-8でファイルに書き出す
+[System.IO.File]::WriteAllText(".commitmsg", "コミットメッセージ", [System.Text.Encoding]::UTF8)
 git commit -F .commitmsg
 Remove-Item .commitmsg
 ```
+→ `Out-File -Encoding utf8` はBOM付きになるため使用禁止
 → `-m` オプションで直接日本語を渡すと文字化けする
 
 #### bash/zsh（Mac/Linux）の場合
@@ -322,9 +323,8 @@ git commit -m "コミットメッセージ"
 | 操作 | PowerShell | bash/zsh |
 |------|------------|----------|
 | コマンド連結 | `;` | `&&` |
-| 日本語コミット | ファイル経由 | `-m` でOK |
+| 日本語コミット | `[System.IO.File]::WriteAllText` | `-m` でOK |
 | ファイル削除 | `Remove-Item` | `rm` |
-| 出力リダイレクト | `Out-File -Encoding utf8` | `>` |
 
 → **コード生成後、ターミナルに応じたコマンドで実行する**
 
