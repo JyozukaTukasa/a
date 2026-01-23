@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30秒タイマー</title>
+    
+    <!-- 
+        30秒カウントダウンタイマー
+        - スタートボタンでカウントダウン開始
+        - リセットボタンで30秒に戻す
+        - 0になったら「終了」と表示
+    -->
+    
+    <style>
+        /* 全体のスタイル設定 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* 画面中央に配置するためのFlexbox設定 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* タイマーのコンテナ */
+        .timer-container {
+            text-align: center;
+            background-color: white;
+            padding: 40px 60px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* タイトル */
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        /* タイマー表示部分（秒数を大きく表示） */
+        .timer-display {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 20px 0;
+            /* 数字が変わってもレイアウトがずれないように幅を固定 */
+            min-width: 200px;
+        }
+
+        /* 終了時のスタイル */
+        .timer-display.finished {
+            color: #e74c3c;
+            font-size: 4rem;
+        }
+
+        /* ボタンを横並びにするコンテナ */
+        .button-container {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* 共通ボタンスタイル */
+        button {
+            padding: 12px 32px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        /* ボタンをクリックした時の効果 */
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* 無効化されたボタン */
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* スタートボタン（緑色） */
+        .start-button {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .start-button:hover:not(:disabled) {
+            background-color: #219a52;
+        }
+
+        /* リセットボタン（グレー） */
+        .reset-button {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .reset-button:hover:not(:disabled) {
+            background-color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="timer-container">
+        <h1>30秒タイマー</h1>
+        
+        <!-- タイマーの秒数表示 -->
+        <div id="timerDisplay" class="timer-display">30</div>
+        
+        <!-- ボタン -->
+        <div class="button-container">
+            <button id="startButton" class="start-button" onclick="startTimer()">
+                スタート
+            </button>
+            <button id="resetButton" class="reset-button" onclick="resetTimer()">
+                リセット
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // 変数の定義
+        // =====================================================
+        
+        // 初期値：30秒
+        const INITIAL_TIME = 30;
+        
+        // 残り秒数を保持する変数
+        let remainingTime = INITIAL_TIME;
+        
+        // setIntervalのIDを保持（タイマーを止める時に使う）
+        let timerId = null;
+        
+        // タイマーが動いているかどうかのフラグ
+        let isRunning = false;
+
+        // =====================================================
+        // DOM要素の取得
+        // =====================================================
+        
+        // getElementById: HTMLのid属性で要素を取得する
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+
+        // =====================================================
+        // タイマー開始処理
+        // =====================================================
+        function startTimer() {
+            // すでに動いている場合は何もしない
+            if (isRunning) return;
+            
+            // タイマー動作中フラグをON
+            isRunning = true;
+            
+            // スタートボタンを無効化（二重クリック防止）
+            startButton.disabled = true;
+            
+            // setInterval: 指定した間隔（ミリ秒）で関数を繰り返し実行
+            // 1000ミリ秒 = 1秒ごとに実行
+            timerId = setInterval(function() {
+                // 残り時間を1秒減らす
+                remainingTime--;
+                
+                // 画面の表示を更新
+                updateDisplay();
+                
+                // 0になったらタイマー終了
+                if (remainingTime <= 0) {
+                    finishTimer();
+                }
+            }, 1000);
+        }
+
+        // =====================================================
+        // 画面表示の更新
+        // =====================================================
+        function updateDisplay() {
+            // textContent: 要素のテキストを変更する
+            timerDisplay.textContent = remainingTime;
+        }
+
+        // =====================================================
+        // タイマー終了処理
+        // =====================================================
+        function finishTimer() {
+            // clearInterval: setIntervalで開始した処理を停止する
+            clearInterval(timerId);
+            timerId = null;
+            isRunning = false;
+            
+            // 「終了」と表示
+            timerDisplay.textContent = '終了';
+            
+            // 終了時のスタイルを適用（文字色を赤に）
+            timerDisplay.classList.add('finished');
+        }
+
+        // =====================================================
+        // リセット処理
+        // =====================================================
+        function resetTimer() {
+            // 動いているタイマーを停止
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+            }
+            
+            // フラグをリセット
+            isRunning = false;
+            
+            // 残り時間を初期値（30秒）に戻す
+            remainingTime = INITIAL_TIME;
+            
+            // 画面表示を更新
+            timerDisplay.textContent = remainingTime;
+            
+            // 終了時のスタイルを解除
+            timerDisplay.classList.remove('finished');
+            
+            // スタートボタンを有効化
+            startButton.disabled = false;
+        }
+    </script>
+</body>
+</html>
