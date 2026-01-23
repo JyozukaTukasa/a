@@ -256,7 +256,8 @@ git checkout ai-generated 2>/dev/null || git checkout -b ai-generated
 git add .
 
 # 2. コミット（文字化け対策：BOMなしUTF-8でファイル作成）
-[System.IO.File]::WriteAllText(".commitmsg", "feat(ai): 機能を生成", [System.Text.Encoding]::UTF8)
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText(".commitmsg", "feat(ai): 機能を生成", $utf8NoBom)
 git commit -F .commitmsg
 Remove-Item .commitmsg
 
@@ -306,7 +307,8 @@ git push origin master
 #### PowerShell（Windows）の場合
 ```powershell
 # 日本語メッセージはBOMなしUTF-8でファイルに書き出す
-[System.IO.File]::WriteAllText(".commitmsg", "コミットメッセージ", [System.Text.Encoding]::UTF8)
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText(".commitmsg", "コミットメッセージ", $utf8NoBom)
 git commit -F .commitmsg
 Remove-Item .commitmsg
 ```
