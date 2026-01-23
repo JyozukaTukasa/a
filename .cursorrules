@@ -5,6 +5,10 @@
 - AI生成コードと人間の成果物を**明確に分離**する
 - 進捗は**Gitで見える化**し、作業証跡を残す
 
+## 🖥️ 環境
+- **ターミナル：Git Bash（Windows）**
+- Git Bashはbash互換のため、`&&` や `-m` オプションで日本語が使える
+
 ---
 
 ## ⚠️ 開発開始前の必須確認
@@ -18,20 +22,7 @@
 ```
 → **URLがない場合は開発を開始しない**（先にリポジトリを作成してもらう）
 
-### 2. ターミナルの種類を確認
-```
-「使用しているターミナルは何ですか？（PowerShell / cmd / bash / zsh）」
-「OSは何ですか？（Windows / Mac / Linux）」
-```
-→ **ターミナルに応じたコマンドを使用する**（PowerShellとbashでコマンドが異なる）
-
-| ターミナル | OS | 注意点 |
-|-----------|-----|--------|
-| PowerShell | Windows | `&&` 使用不可、`;` で区切る |
-| cmd | Windows | `&&` 使用可 |
-| bash/zsh | Mac/Linux | `&&` 使用可 |
-
-### 3. 曖昧な指示は質問する
+### 2. 曖昧な指示は質問する
 → 目的・入力・出力・エラー処理が不明確なら、必ず質問してから実装
 
 ---
@@ -250,22 +241,6 @@ git checkout ai-generated 2>/dev/null || git checkout -b ai-generated
 ### ⚠️ AIが作業した後（必須・自動実行）
 **ソースコード・ドキュメントの追加/修正/変更があったら、AIは必ず以下を実行すること：**
 
-#### PowerShell（Windows）の場合
-```powershell
-# 1. 変更をステージング
-git add .
-
-# 2. コミット（文字化け対策：BOMなしUTF-8でファイル作成）
-$utf8NoBom = New-Object System.Text.UTF8Encoding $false
-[System.IO.File]::WriteAllText(".commitmsg", "feat(ai): 機能を生成", $utf8NoBom)
-git commit -F .commitmsg
-Remove-Item .commitmsg
-
-# 3. ai-generatedブランチにプッシュ（必須）
-git push origin ai-generated
-```
-
-#### bash/zsh（Mac/Linux）の場合
 ```bash
 # 1. 変更をステージング
 git add .
@@ -278,7 +253,6 @@ git push origin ai-generated
 ```
 
 → **変更があったら必ずプッシュする（スキップ禁止）**
-→ **ターミナルの種類に応じたコマンドを使用する**
 
 ### ⚠️ 人がプッシュを依頼した場合
 **「プッシュして」「mainにあげて」等の依頼があった場合のみ、main/masterにプッシュ**
@@ -297,38 +271,6 @@ git push origin main
 # または
 git push origin master
 ```
-
-### ⚠️ 文字化け対策（必須）
-
-**Gitにプッシュする前に必ず確認すること：**
-1. ターミナルの種類（PowerShell / bash / zsh）
-2. 日本語を含むコミットメッセージの場合は文字コード対策
-
-#### PowerShell（Windows）の場合
-```powershell
-# 日本語メッセージはBOMなしUTF-8でファイルに書き出す
-$utf8NoBom = New-Object System.Text.UTF8Encoding $false
-[System.IO.File]::WriteAllText(".commitmsg", "コミットメッセージ", $utf8NoBom)
-git commit -F .commitmsg
-Remove-Item .commitmsg
-```
-→ `Out-File -Encoding utf8` はBOM付きになるため使用禁止
-→ `-m` オプションで直接日本語を渡すと文字化けする
-
-#### bash/zsh（Mac/Linux）の場合
-```bash
-# 直接 -m オプションで日本語OK
-git commit -m "コミットメッセージ"
-```
-
-#### コマンドの違い早見表
-| 操作 | PowerShell | bash/zsh |
-|------|------------|----------|
-| コマンド連結 | `;` | `&&` |
-| 日本語コミット | `[System.IO.File]::WriteAllText` | `-m` でOK |
-| ファイル削除 | `Remove-Item` | `rm` |
-
-→ **コード生成後、ターミナルに応じたコマンドで実行する**
 
 ### コミットメッセージ
 ```
