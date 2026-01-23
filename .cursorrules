@@ -174,56 +174,100 @@ docs/
 ```
 質問例：
 「GitHubリポジトリのURLを教えてください」
-「進捗管理用のリポジトリはありますか？」
+「このプロジェクトのリモートリポジトリはありますか？」
 ```
 
-→ URLがない場合は、先にリポジトリを作成してもらう
+→ **URLがない場合は開発を開始しない**（先にリポジトリを作成してもらう）
+
+### 既存プロジェクトにCursor Rulesを追加した場合
+**AIは以下を自動で実行すること：**
+1. `git remote -v` でリモート確認
+2. リモートがなければ → ユーザーにURLを聞く
+3. `git fetch origin` でリモートの情報を取得
+4. `ai-generated`ブランチがなければ作成
+
+```bash
+# リモート確認
+git remote -v
+
+# リモートの最新情報を取得
+git fetch origin
+
+# ai-generatedブランチ作成（既存プロジェクト対応）
+git checkout -b ai-generated
+# または既にリモートにある場合
+git checkout -b ai-generated origin/ai-generated
+```
 
 ### ブランチ構成
 ```
-main           # 人間が確認・承認したコード（直接作業禁止）
-ai-generated   # AIで生成したコード（レビュー前）
-feature/xxx    # 機能開発
-fix/xxx        # バグ修正
+main (または master)  # 人間が確認・承認したコード
+ai-generated          # AIで生成したコード（自動プッシュ先）
+feature/xxx           # 機能開発
+fix/xxx               # バグ修正
 ```
 
-### ⚠️ AIがコードを生成する前（必須・自動実行）
+### ⚠️ プッシュ先のルール（重要）
+
+| 実行者 | プッシュ先 | 条件 |
+|--------|-----------|------|
+| **AI（自動）** | `ai-generated` | コード・ドキュメントの追加/修正/変更時は**必ず**プッシュ |
+| **人（依頼）** | `main` または `master` | 人が「プッシュして」と依頼した場合のみ |
+
+### ⚠️ AIが作業する前（必須・自動実行）
 **mainブランチでは作業しない。必ずai-generatedブランチで作業する。**
 
 **AIは以下を自動で実行すること：**
 1. `git branch` で現在のブランチを確認
-2. mainブランチにいる場合 → `git checkout -b ai-generated` でブランチ作成・切り替え
-3. ai-generatedブランチにいることを確認してからコードを生成
+2. main/masterブランチにいる場合 → `ai-generated`に切り替え
+3. ai-generatedブランチにいることを確認してから作業開始
 
 ```bash
 # 1. 現在のブランチを確認
 git branch
 
 # 2. ai-generatedブランチに切り替え（なければ作成）
-git checkout -b ai-generated
-# または既にある場合
-git checkout ai-generated
+git checkout ai-generated 2>/dev/null || git checkout -b ai-generated
 
-# 3. ブランチ確認後、コード生成を開始
+# 3. ブランチ確認後、作業を開始
 ```
 
-→ **この手順をスキップしてコードを生成してはいけない**
+→ **この手順をスキップして作業してはいけない**
 
-### ⚠️ AIがコードを生成した後（必須・自動実行）
-**コード生成が完了したら、AIは以下を自動で実行すること：**
+### ⚠️ AIが作業した後（必須・自動実行）
+**ソースコード・ドキュメントの追加/修正/変更があったら、AIは必ず以下を実行すること：**
 
 ```bash
 # 1. 変更をステージング
 git add .
 
 # 2. コミット（文字化け対策：ファイル経由でUTF-8メッセージ）
-# コミットメッセージをファイルに書き出してから実行
 echo "feat(ai): ○○機能を生成" | Out-File -Encoding utf8 .commitmsg
 git commit -F .commitmsg
 Remove-Item .commitmsg
 
-# 3. リモートにプッシュ
+# 3. ai-generatedブランチにプッシュ（必須）
 git push origin ai-generated
+```
+
+→ **変更があったら必ずプッシュする（スキップ禁止）**
+
+### ⚠️ 人がプッシュを依頼した場合
+**「プッシュして」「mainにあげて」等の依頼があった場合のみ、main/masterにプッシュ**
+
+```bash
+# mainブランチに切り替え
+git checkout main
+# または
+git checkout master
+
+# ai-generatedの内容をマージ
+git merge ai-generated
+
+# mainにプッシュ
+git push origin main
+# または
+git push origin master
 ```
 
 ### ⚠️ 文字化け対策（必須）
