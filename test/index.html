@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>簡単電卓 - 4足演算</title>
+  <!-- 
+    電卓アプリのメインHTML
+    - 4足演算（+、-、×、÷）に対応
+    - TypeScriptでロジックを実装
+  -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="calculator">
+    <!-- 
+      電卓のタイトル
+      何のアプリかユーザーに分かりやすく表示
+    -->
+    <h1 class="calculator-title">電卓</h1>
+    
+    <!-- 
+      ディスプレイ部分
+      - 入力中の数字や計算結果を表示
+      - readonlyで直接編集を防止
+    -->
+    <input type="text" id="display" class="display" readonly value="0">
+    
+    <!-- 
+      ボタン部分
+      - 数字ボタン（0-9）
+      - 演算子ボタン（+、-、×、÷）
+      - 機能ボタン（C：クリア、=：計算実行）
+      - data-*属性でJavaScriptから値を取得しやすくしている
+    -->
+    <div class="buttons">
+      <!-- 1行目：クリア、÷ -->
+      <button class="btn btn-clear" data-action="clear">C</button>
+      <button class="btn btn-operator" data-action="operator" data-value="/">÷</button>
+      <button class="btn btn-operator" data-action="operator" data-value="*">×</button>
+      <button class="btn btn-operator" data-action="operator" data-value="-">−</button>
+      
+      <!-- 2行目：7, 8, 9, + -->
+      <button class="btn btn-number" data-action="number" data-value="7">7</button>
+      <button class="btn btn-number" data-action="number" data-value="8">8</button>
+      <button class="btn btn-number" data-action="number" data-value="9">9</button>
+      <button class="btn btn-operator btn-plus" data-action="operator" data-value="+">+</button>
+      
+      <!-- 3行目：4, 5, 6 -->
+      <button class="btn btn-number" data-action="number" data-value="4">4</button>
+      <button class="btn btn-number" data-action="number" data-value="5">5</button>
+      <button class="btn btn-number" data-action="number" data-value="6">6</button>
+      
+      <!-- 4行目：1, 2, 3, = -->
+      <button class="btn btn-number" data-action="number" data-value="1">1</button>
+      <button class="btn btn-number" data-action="number" data-value="2">2</button>
+      <button class="btn btn-number" data-action="number" data-value="3">3</button>
+      <button class="btn btn-equal" data-action="equal">=</button>
+      
+      <!-- 5行目：0, 小数点 -->
+      <button class="btn btn-number btn-zero" data-action="number" data-value="0">0</button>
+      <button class="btn btn-number" data-action="number" data-value=".">.</button>
+    </div>
+  </div>
+
+  <!-- 
+    TypeScriptをコンパイルしたJavaScriptを読み込み
+    distフォルダにコンパイル後のファイルが出力される
+  -->
+  <script src="dist/calculator.js"></script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+/**
+ * 電卓アプリのスタイル
+ * 
+ * 【デザイン方針】
+ * - シンプルで見やすいボタン式電卓
+ * - ダークテーマで目に優しい
+ * - レスポンシブ対応（スマホでも使える）
+ */
+
+/* ========================================
+   リセット・ベーススタイル
+   ブラウザごとの差異をなくすための設定
+   ======================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  /* 
+    背景色：ダークグレー
+    画面中央に電卓を配置するためflexboxを使用
+  */
+  background-color: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ========================================
+   電卓本体のスタイル
+   ======================================== */
+.calculator {
+  /* 
+    電卓の外枠
+    - 角丸で柔らかい印象に
+    - 影をつけて浮き上がって見せる
+  */
+  background-color: #16213e;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  width: 320px;
+}
+
+/* ========================================
+   タイトル
+   ======================================== */
+.calculator-title {
+  /* 
+    電卓のタイトル
+    中央揃え、白色で見やすく
+  */
+  color: #e94560;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+
+/* ========================================
+   ディスプレイ（数字表示部分）
+   ======================================== */
+.display {
+  /* 
+    計算結果を表示するエリア
+    - 右揃え（電卓らしく）
+    - 大きめのフォントで見やすく
+    - 背景を少し暗くして区別
+  */
+  width: 100%;
+  height: 60px;
+  background-color: #0f3460;
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 2rem;
+  text-align: right;
+  padding: 0 15px;
+  margin-bottom: 15px;
+  /* 長い数字が入っても溢れないように */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ========================================
+   ボタンエリア
+   ======================================== */
+.buttons {
+  /* 
+    CSS Gridでボタンを並べる
+    - 4列のグリッド
+    - 隙間は10px
+  */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+/* ========================================
+   ボタン共通スタイル
+   ======================================== */
+.btn {
+  /* 
+    すべてのボタンに適用される基本スタイル
+    - 押しやすい大きさ
+    - ホバー時にアニメーション
+  */
+  height: 60px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  /* 押したときの効果 */
+  user-select: none;
+}
+
+/* ボタンにホバーしたとき少し明るく */
+.btn:hover {
+  filter: brightness(1.2);
+  transform: scale(1.02);
+}
+
+/* ボタンを押したとき少し縮む */
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* ========================================
+   数字ボタン
+   ======================================== */
+.btn-number {
+  /* 
+    0-9と小数点のボタン
+    落ち着いたグレー系
+  */
+  background-color: #533483;
+  color: #ffffff;
+}
+
+/* 0ボタンは2列分の幅にする */
+.btn-zero {
+  grid-column: span 2;
+}
+
+/* ========================================
+   演算子ボタン（+, -, ×, ÷）
+   ======================================== */
+.btn-operator {
+  /* 
+    演算子は目立つ色に
+    どの演算をするか一目で分かるように
+  */
+  background-color: #e94560;
+  color: #ffffff;
+}
+
+/* +ボタンは2行分の高さにする */
+.btn-plus {
+  grid-row: span 2;
+  height: 130px;
+}
+
+/* ========================================
+   イコールボタン
+   ======================================== */
+.btn-equal {
+  /* 
+    計算実行ボタン
+    一番目立つ色に
+    2行分の高さ
+  */
+  background-color: #00b894;
+  color: #ffffff;
+  grid-row: span 2;
+  height: 130px;
+}
+
+/* ========================================
+   クリアボタン
+   ======================================== */
+.btn-clear {
+  /* 
+    クリアボタン
+    警告色（オレンジ系）で誤操作防止
+    2列分の幅
+  */
+  background-color: #ff7675;
+  color: #ffffff;
+  grid-column: span 2;
+}
+
+/* ========================================
+   エラー表示時のスタイル
+   ======================================== */
+.display.error {
+  /* 
+    0で割った時などエラー時に赤くする
+    ユーザーに異常を知らせる
+  */
+  color: #ff7675;
+  animation: shake 0.5s ease;
+}
+
+/* エラー時に揺れるアニメーション */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
